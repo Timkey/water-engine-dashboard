@@ -152,12 +152,15 @@ class DataPot:
     def getCounties(self):
         counties = []
 
-        for each in self.repo['data']:
-            county = each['county']
-            mwaterId = each['mwater_id']
+        try:
+            for each in self.repo['data']:
+                county = each['county']
+                mwaterId = each['mwater_id']
 
-            if county not in counties:
-                counties.append(county)
+                if county not in counties:
+                    counties.append(county)
+        except:
+            return counties
 
         return counties
 
