@@ -25,13 +25,10 @@ class DataPot:
         thread.daemon = True                            # Daemonize thread
         thread.start()
 
-        #publish accessed variable
-        self.counties = []
-
     def keepAlive(self, interval=300):
         while True:
             print ('Working')
-            #self.reloadAPI()
+            self.reloadAPI()
             time.sleep(interval)
 
     def loadFiles(self):
