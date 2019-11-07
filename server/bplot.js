@@ -33,7 +33,7 @@ rock.prototype.disp = async function(mod={})
       bgcolor: 'transparent',
     }
   };
-  
+
   //mod.siteNames.length
   for (let f=0; f < 10; f++)
   {
