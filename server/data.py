@@ -167,11 +167,15 @@ class DataPot:
     def getSiteReadsByCounty(self, county = None):
         if county is None or county not in self.getCounties():
             # print (self.repo['siteDailyReads'].keys())
-            return self.repo['siteDailyReads'][list(self.repo['siteDailyReads'].keys())[0]]
+            try:
+                return self.repo['siteDailyReads'][list(self.repo['siteDailyReads'].keys())[0]]
+            except:
+                return []
         else:
             lim = 300
             title = "{} Water Points".format(county)
             mod = {"title": title, "sites":{}, "siteNames":[]}
+            xL = 0
 
 
             for siteId, lst in self.repo['siteDailyReads'].items():
@@ -180,17 +184,20 @@ class DataPot:
                     houses = each['households']
                     date = each['localDate']
                     yieldDaily = each['yieldDaily']
-                    siteName = each['siteName'].split(' - ')[1]
+                    siteName = each['siteName']
                     status = each['expertStatus']
 
                     if cnty == county:
                         if siteName not in mod['siteNames']:
                             mod['siteNames'].append(siteName)
 
+                        if yieldDaily > xL:
+                            xL = yieldDaily
+
                         tmp = {}
                         tmp['status'] = status
                         tmp['households'] = houses
-                        tmp['name'] = siteName
+                        tmp['name'] = siteName.split(' - ')[1]
                         tmp['date'] = date
                         tmp['latestYieldDaily'] = yieldDaily
 
@@ -201,4 +208,9 @@ class DataPot:
 
                         elif len(mod['sites'][siteName]['data']) < lim:
                             mod['sites'][siteName]['data'].append(yieldDaily)
+
+            mod['maxYield'] = xL
             return mod
+
+    def getSummary(self):
+        return self.repo['summary']

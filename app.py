@@ -15,7 +15,11 @@ def hello():
 @app.route("/js/<ext>")
 def js(ext):
     n = "server/%s" %(ext)
-    print (n, 'found the file')
+    return render_template(n)
+
+@app.route("/images/<ext>")
+def img(ext):
+    n = "images/%s" %(ext)
     return render_template(n)
 
 @app.route("/counties")
@@ -26,6 +30,9 @@ def counties():
 def countyBoxPlot(name):
     return jsonify({"data" : flex.getSiteReadsByCounty(name)})
 
+@app.route("/summary")
+def summary():
+    return jsonify({'data' :flex.getSummary()})
 
 @app.route("/groups", methods=['GET', 'POST'])
 def groups():
