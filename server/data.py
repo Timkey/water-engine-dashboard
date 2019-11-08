@@ -25,7 +25,7 @@ class DataPot:
         thread.daemon = True                            # Daemonize thread
         thread.start()
 
-    def keepAlive(self, interval=300):
+    def keepAlive(self, interval=7000):
         while True:
             print ('Working')
             self.reloadAPI()
@@ -174,7 +174,7 @@ class DataPot:
         else:
             lim = 300
             title = "{} Water Points".format(county)
-            mod = {"title": title, "sites":{}, "siteNames":[]}
+            mod = {"title": title, "sites":{}, "siteNames":[], "status":{}, "st":{}}
             xL = 0
 
 
@@ -205,6 +205,14 @@ class DataPot:
                             tmp['data'] = []
                             mod['sites'][siteName] = tmp
                             mod['sites'][siteName]['data'].append(yieldDaily)
+
+                            if tmp['status'] not in mod['status'].keys():
+                            	mod['status'][tmp['status']] = 1
+                            else:
+                                mod['status'][tmp['status']] += 1
+
+                            mod['st']['status'] = list(mod['status'].keys())
+                            mod['st']['data'] = list(mod['status'].values())
 
                         elif len(mod['sites'][siteName]['data']) < lim:
                             mod['sites'][siteName]['data'].append(yieldDaily)

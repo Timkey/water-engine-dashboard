@@ -58,21 +58,3 @@ f.updateReadings(Math.random() * 100);
 let f2 = new spedo();
 f2.spool('#flow-gauge2');
 f2.updateReadings(Math.random() * 100);
-
-let j = new spedoScroll();
-j.add('test', 'test');
-j.add('test1', 'test1');
-j.add('test2', 'flow-gauge3');
-j.render();
-
-let f3 = new spedo();
-f3.spool('#flow-gauge3');
-f3.updateReadings(Math.random() * 100);
-
-let f4 = new spedo();
-f4.spool('#test');
-f4.updateReadings(Math.random() * 100);
-
-let f5 = new spedo();
-f5.spool('#test1');
-f5.updateReadings(Math.random() * 100);

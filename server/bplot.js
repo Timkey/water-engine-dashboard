@@ -18,6 +18,7 @@ rock.prototype.next = async function(ad=0, d = [])
 
   if (len > 0 && ad < len)
   {
+    $('#Head').html('Flow Rate : '+d[ad]);
     let url = 'countyboxplot/'+d[ad];
     let p = new access(url);
     await p.get();
@@ -111,6 +112,7 @@ rock.prototype.redo = async function(mod = {}, count=10, pointer=0)
   spedo.render();
   this.spedo(dataSpedo, maxYield);
   this.barplot(groups, groupData);
+  this.pieplot(mod.st.status, mod.st.data);
 
   Plotly.newPlot('myDiv', data, layout);
   let inter = this;
@@ -131,19 +133,6 @@ rock.prototype.redo = async function(mod = {}, count=10, pointer=0)
 
 rock.prototype.barplot = async function(groups, groupData)
 {
-  // let groups = [];
-  // let groupData = [];
-  //
-  // for (let c = 0; c < mod.siteNames.length; c++)
-  // {
-  //   let siteName = mod.siteNames[c];
-  //   let label = mod.sites[siteName]['name'];
-  //   let households = mod.sites[siteName]['households'];
-  //
-  //   groups.push(label);
-  //   groupData.push(households);
-  // }
-
   var dataBar = [{
     type: 'bar',
     x: groupData,
@@ -153,12 +142,34 @@ rock.prototype.barplot = async function(groups, groupData)
 
   var layout = {
     height: 300,
-    width: 400,
-    margin: {"t": 0, "b": 20, "l": 200, "r": 0},
+    width: 320,
+    margin: {"t": 0, "b": 15, "l": 100, "r": 0},
     showlegend: false
   }
 
   Plotly.newPlot('population', dataBar, layout);
+}
+
+rock.prototype.pieplot = async function(groups, groupData)
+{
+  var data = [{
+    type: "pie",
+    values: groupData,
+    labels: groups,
+    //textinfo: "label+percent",
+    textposition: "outside",
+    automargin: true,
+    hole: .6
+  }]
+
+  var layout = {
+    height: 300,
+    width: 370,
+    margin: {"t": 0, "b": 0, "l": 0, "r": 0},
+    showlegend: true
+    }
+
+  Plotly.newPlot('expertStatus', data, layout)
 }
 
 rock.prototype.spedo = async function(d=[], maxYield=500)
