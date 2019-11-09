@@ -32,6 +32,14 @@ class DataPot:
             tmp['payLoad'] = data
             tmp.dump()
 
+    def pickleLoad(self, pth=None):
+        if pth is None:
+            return None
+        else:
+            tmp = file_archive(pth)
+            tmp.load()
+            return tmp['payLoad']
+
     def keepAlive(self, interval=7000):
         while True:
             print ('Working')
@@ -42,9 +50,8 @@ class DataPot:
         for each in self.files:
             pth = "data/%s.pickle" %(each)
             if os.path.exists(pth):
-                tmp = file_archive(pth)
-                tmp.load()
-                self.repo[each] = tmp['payLoad']
+
+                self.repo[each] = self.pickleLoad(pth)
                 #self.repo[each] = pickle.load(open(pth, 'rb'))
             else:
                 self.repo[each] = None
