@@ -1,5 +1,6 @@
 import requests
-import pickle
+#import joblib as pickle
+from klepto.archives import file_archive
 import numpy as np
 import os
 import threading
@@ -25,6 +26,12 @@ class DataPot:
         thread.daemon = True                            # Daemonize thread
         thread.start()
 
+    def pickleDump(self, data=None, fileName=None):
+        if data is not None and fileName is not None:
+            tmp = file_archive(fileName)
+            tmp['payLoad'] = data
+            tmp.dump()
+
     def keepAlive(self, interval=7000):
         while True:
             print ('Working')
@@ -35,7 +42,10 @@ class DataPot:
         for each in self.files:
             pth = "data/%s.pickle" %(each)
             if os.path.exists(pth):
-                self.repo[each] = pickle.load(open(pth, 'rb'))
+                tmp = file_archive(pth)
+                tmp.load()
+                self.repo[each] = tmp['payLoad']
+                #self.repo[each] = pickle.load(open(pth, 'rb'))
             else:
                 self.repo[each] = None
 
@@ -49,7 +59,8 @@ class DataPot:
         url = self.url
         re = requests.get(url[3])
         summary = re.json()['data']
-        pickle.dump(summary, open('data/summary.pickle', 'wb'))
+        #pickle.dump(summary, open('data/summary.pickle', 'wb'))
+        self.pickleDump(summary, 'data/summary.pickle')
 
         #self.repo['summary'] = summary
         self.loadFiles()
@@ -87,8 +98,10 @@ class DataPot:
             d = re.json()['data']
             countyDataDic[each] = d
 
-        pickle.dump(data, open('data/data.pickle', 'wb'))
-        pickle.dump(countyDataDic, open('data/countyDataDic.pickle', 'wb'))
+        #pickle.dump(data, open('data/data.pickle', 'wb'))
+        self.pickleDump(data, 'data/data.pickle')
+        #pickle.dump(countyDataDic, open('data/countyDataDic.pickle', 'wb'))
+        self.pickleDump(countyDataDic, 'data/countyDataDic.pickle')
 
         #self.repo['data'] = data
         #self.repo['countyDataDic'] = countyDataDic
@@ -109,7 +122,9 @@ class DataPot:
                 siteReadings[each] = re.json()['data']
                 print (re.json()['statusMessage'])
 
-        pickle.dump(siteReadings, open('data/siteReadings.pickle', 'wb'))
+
+        #pickle.dump(siteReadings, open('data/siteReadings.pickle', 'wb'))
+        self.pickleDump(siteReadings, 'data/siteReadings.pickle')
         #self.repo['siteReadings'] = siteReadings
         self.loadFiles()
 
@@ -139,8 +154,10 @@ class DataPot:
                 elif com in siteMonthly[sId].keys():
                     siteMonthly[sId][com].append(eachSite)
 
-        pickle.dump(siteDailyReads, open('data/siteDailyReads.pickle', 'wb'))
-        pickle.dump(siteMonthly, open('data/siteMonthly.pickle', 'wb'))
+        #pickle.dump(siteDailyReads, open('data/siteDailyReads.pickle', 'wb'))
+        self.pickleDump(siteDailyReads, 'data/siteDailyReads.pickle')
+        #pickle.dump(siteMonthly, open('data/siteMonthly.pickle', 'wb'))
+        self.pickleDump(siteMonthly, 'data/siteMonthly.pickle')
 
         self.loadFiles()
 
