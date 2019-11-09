@@ -6,6 +6,10 @@ import os
 import threading
 import time
 
+import zlib, json, base64
+
+ZIPJSON_KEY = 'base64(zip(o))'
+
 class DataPot:
 
     def __init__(self):
@@ -28,17 +32,59 @@ class DataPot:
 
     def pickleDump(self, data=None, fileName=None):
         if data is not None and fileName is not None:
-            tmp = file_archive(fileName)
-            tmp['payLoad'] = data
-            tmp.dump()
+            #json.dump(data, open(fileName, 'wb'))
+            #data = json.dumps(data)
+            data = self.json_zip(data)
+            with open(fileName, 'w') as outfile:
+                json.dump(data, outfile, sort_keys=True)
+            # tmp = file_archive(fileName)
+            # tmp['payLoad'] = data
+            # tmp.dump()
 
-    def pickleLoad(self, pth=None):
-        if pth is None:
+    def pickleLoad(self, fileName=None):
+        if fileName is None:
             return None
         else:
-            tmp = file_archive(pth)
-            tmp.load()
-            return tmp['payLoad']
+            #data = json.load(open(pth))
+            with open(fileName) as infile:
+                data = json.load(infile)
+            # tmp = file_archive(pth)
+            # tmp.load()
+            data = self.json_unzip(data)
+            return data
+
+    def json_zip(self, j):
+        j = {
+            ZIPJSON_KEY: base64.b64encode(
+                zlib.compress(
+                    json.dumps(j).encode('utf-8')
+                )
+            ).decode('ascii')
+        }
+
+        return j
+
+    def json_unzip(self, j, insist=True):
+        try:
+            assert (j[ZIPJSON_KEY])
+            assert (set(j.keys()) == {ZIPJSON_KEY})
+        except:
+            if insist:
+                raise RuntimeError("JSON not in the expected format {" + str(ZIPJSON_KEY) + ": zipstring}")
+            else:
+                return j
+
+        try:
+            j = zlib.decompress(base64.b64decode(j[ZIPJSON_KEY]))
+        except:
+            raise RuntimeError("Could not decode/unzip the contents")
+
+        try:
+            j = json.loads(j)
+        except:
+            raise RuntimeError("Could interpret the unzipped contents")
+
+        return j
 
     def keepAlive(self, interval=7000):
         while True:
