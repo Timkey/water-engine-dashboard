@@ -191,7 +191,7 @@ class DataPot:
 
     def latestSiteReadings(self):
         url = self.url
-        countyDataDic = self.repo['countyDataDic']
+        countyDataDic = self.loadFiles(block='countyDataDic')
 
         siteDailyReads = {}
         siteMonthly = {}
