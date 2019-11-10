@@ -92,15 +92,23 @@ class DataPot:
             self.reloadAPI()
             time.sleep(interval)
 
-    def loadFiles(self):
-        for each in self.files:
-            pth = "data/%s.pickle" %(each)
-            if os.path.exists(pth):
+    def loadFiles(self, block=True):
+        pth = "data/%s.pickle" %(block)
+        if block is False:
+            for each in self.files:
+                pth = "data/%s.pickle" %(each)
+                if os.path.exists(pth):
 
-                self.repo[each] = self.pickleLoad(pth)
-                #self.repo[each] = pickle.load(open(pth, 'rb'))
-            else:
-                self.repo[each] = None
+                    self.repo[each] = self.pickleLoad(pth)
+                    #self.repo[each] = pickle.load(open(pth, 'rb'))
+                else:
+                    self.repo[each] = None
+        elif os.path.exists(pth):
+            print (block, ' Found')
+            return self.pickleLoad(pth)
+            #self.repo[each] = pickle.load(open(pth, 'rb'))
+        else:
+            print (block, ' not found')
 
     def reloadAPI(self):
         self.summary()
@@ -220,10 +228,11 @@ class DataPot:
                 print (key, '=> is Not Initialized')
 
     def getCounties(self):
+        data = self.loadFiles(block='data')
         counties = []
 
         try:
-            for each in self.repo['data']:
+            for each in data:
                 county = each['county']
                 mwaterId = each['mwater_id']
 
@@ -235,10 +244,11 @@ class DataPot:
         return counties
 
     def getSiteReadsByCounty(self, county = None):
+        siteDailyReads = self.loadFiles(block='siteDailyReads')
         if county is None or county not in self.getCounties():
             # print (self.repo['siteDailyReads'].keys())
             try:
-                return self.repo['siteDailyReads'][list(self.repo['siteDailyReads'].keys())[0]]
+                return siteDailyReads[list(siteDailyReads.keys())[0]]
             except:
                 return []
         else:
@@ -248,7 +258,7 @@ class DataPot:
             xL = 0
 
 
-            for siteId, lst in self.repo['siteDailyReads'].items():
+            for siteId, lst in siteDailyReads.items():
                 for each in lst:
                     cnty = each['county']
                     houses = each['households']
@@ -291,4 +301,4 @@ class DataPot:
             return mod
 
     def getSummary(self):
-        return self.repo['summary']
+        return self.loadFiles(block='summary')
